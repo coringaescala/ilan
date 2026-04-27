@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-FWE62YFYNK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+  
+    gtag('config', 'G-FWE62YFYNK');
+  </script>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-P34XGHN7');</script>
+  <!-- End Google Tag Manager -->  
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Como Criar Leitores Num Mundo de Telas — Ilan Brenman</title>
+  <link rel="icon" type="image/png" href="images/icone-IB-150x150.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Cormorant+Garamond:ital,wght@1,400;1,500&family=Inter:wght@400;600&family=DM+Sans:wght@700&display=swap" rel="stylesheet"/>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --azul-noite:   #1A2E4A;
+      --vermelho:     #C0392B;
+      --creme:        #F5EDD8;
+      --dourado:      #B8860B;
+      --off-white:    #F9F6F0;
+      --texto:        #2C3E50;
+
+      --playfair: 'Playfair Display', Georgia, serif;
+      --cormorant: 'Cormorant Garamond', Georgia, serif;
+      --inter: 'Inter', system-ui, sans-serif;
+      --dm-sans: 'DM Sans', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--off-white);
+      color: var(--texto);
+      font-family: var(--inter);
+      font-size: 17px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .paper-texture { position: relative; }
+    .paper-texture::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+    .paper-texture > * { position: relative; z-index: 1; }
+
+    .divider { width: 100%; height: 1px; background: var(--vermelho); border: none; margin: 0; }
+    .divider--gold { background: var(--dourado); }
+    .divider--light { background: #d6cfc3; }
+
+    .topbar {
+      background-color: var(--vermelho);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      flex-wrap: wrap;
+      row-gap: 8px;
+    }
+    .topbar__label {
+      font-family: var(--dm-sans);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--creme);
+    }
+    .topbar__sep {
+      display: inline-block;
+      width: 1px;
+      height: 14px;
+      background: var(--creme);
+      opacity: 0.35;
+      margin: 0 16px;
+      vertical-align: middle;
+    }
+    .topbar__name {
+      font-family: var(--dm-sans);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #fff;
+      opacity: 0.75;
+    }
+
+    .topbar__countdown-wrap { display: flex; align-items: center; gap: 0; margin-left: 28px; }
+    .topbar__countdown-label {
+      font-family: var(--dm-sans);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #fff;
+      opacity: 0.6;
+      margin-right: 14px;
+      white-space: nowrap;
+    }
+    .countdown { display: flex; align-items: center; gap: 6px; }
+    .countdown__block { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .countdown__num {
+      font-family: var(--playfair);
+      font-weight: 700;
+      font-size: 20px;
+      line-height: 1;
+      color: #fff;
+      min-width: 34px;
+      text-align: center;
+      letter-spacing: 0.02em;
+    }
+    .countdown__unit {
+      font-family: var(--dm-sans);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--creme);
+      opacity: 0.7;
+    }
+    .countdown__sep {
+      font-family: var(--playfair);
+      font-size: 18px;
+      color: #fff;
+      opacity: 0.3;
+      margin-bottom: 12px;
+      line-height: 1;
+    }
+
+    .hero { background-color: var(--azul-noite); padding: 30px 45px 30px; text-align: center; }
+    .hero__eyebrow {
+      display: inline-block;
+      font-family: var(--dm-sans);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dourado);
+      margin-bottom: 32px;
+    }
+    .hero__eyebrow::before, .hero__eyebrow::after { content: '—'; margin: 0 10px; opacity: 0.5; }
+    .hero__title {
+      font-family: var(--playfair);
+      font-weight: 700;
+      font-size: clamp(36px, 5.5vw, 40px);
+      line-height: 1.15;
+      color: var(--creme);
+      max-width: 860px;
+      margin: 0 auto 20px;
+    }
+    .hero__title em { font-style: italic; color: var(--dourado); }
+    .hero__subtitle {
+      font-family: var(--inter);
+      font-size: clamp(16px, 2vw, 16px);
+      font-weight: 400;
+      color: var(--creme);
+      opacity: 0.8;
+      max-width: 640px;
+      margin: 0 auto 0;
+      line-height: 1.65;
+    }
+
+    .hero__proof { display: flex; align-items: center; justify-content: center; gap: 32px; flex-wrap: wrap; margin-bottom: 0; }
+    .hero__proof-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .hero__proof-item strong { font-family: var(--playfair); font-size: 28px; font-weight: 700; color: var(--dourado); line-height: 1; }
+    .hero__proof-item span { font-family: var(--inter); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--creme); opacity: 0.6; }
+    .hero__proof-divider { width: 1px; height: 40px; background: var(--creme); opacity: 0.15; }
+
+    .video-section { background-color: var(--off-white); padding: 15px 48px 40px; text-align: center; }
+    .video-section__label {
+      font-family: var(--dm-sans);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--vermelho);
+      margin-bottom: 11px;
+    }
+    .video-section__intro {
+      font-family: var(--cormorant);
+      font-style: italic;
+      font-size: clamp(20px, 2.5vw, 26px);
+      color: var(--azul-noite);
+      max-width: 600px;
+      margin: 15px auto 15px;
+      line-height: 1.5;
+    }
+    .video-wrapper {
+      position: relative;
+      max-width: 1280px;
+      width: 100%;
+      margin: 0 auto;
+      border: 1px solid rgba(184,134,11,0.25);
+      box-shadow: 0 16px 64px rgba(26,46,74,0.14);
+    }
+    .video-wrapper iframe, .video-wrapper video { display: block; width: 100%; aspect-ratio: 16 / 9; border: none; }
+    .video-placeholder {
+      aspect-ratio: 16 / 9;
+      background-color: var(--azul-noite);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      color: var(--creme);
+    }
+    .video-placeholder__icon {
+      width: 64px;
+      height: 64px;
+      border: 1.5px solid var(--dourado);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .video-placeholder__icon svg { width: 22px; height: 22px; fill: var(--dourado); margin-left: 4px; }
+    .video-placeholder__text { font-family: var(--inter); font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.5; }
+
+    .capture-section { background-color: var(--creme); padding: 40px 48px 40px; text-align: center; }
+    .capture-section__tag {
+      font-family: var(--dm-sans);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--vermelho);
+      margin-bottom: 16px;
+    }
+    .capture-section__title {
+      font-family: var(--playfair);
+      font-weight: 700;
+      font-size: clamp(26px, 3.5vw, 38px);
+      color: var(--azul-noite);
+      max-width: 680px;
+      margin: 0 auto 12px;
+      line-height: 1.2;
+    }
+    .capture-section__sub {
+      font-family: var(--inter);
+      font-size: 16px;
+      color: var(--texto);
+      opacity: 0.75;
+      max-width: 480px;
+      margin: 0 auto 40px;
+    }
+    .capture-form { max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+    .phone-row { display: flex; gap: 0; }
+    .phone-row__ddi {
+      flex-shrink: 0;
+      padding: 16px 12px;
+      border: 1.5px solid rgba(26,46,74,0.2);
+      border-right: none;
+      border-radius: 0;
+      background: #f5f0e8;
+      font-family: var(--inter);
+      font-size: 15px;
+      color: var(--azul-noite);
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%231a2e4a'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      padding-right: 26px;
+    }
+    .phone-row__ddi:focus { outline: none; border-color: var(--azul-noite); }
+    .phone-row input[type="tel"] { flex: 1; border-radius: 0; }
+    .capture-form input {
+      width: 100%;
+      padding: 16px 20px;
+      border: 1.5px solid rgba(26,46,74,0.2);
+      background: var(--off-white);
+      font-family: var(--inter);
+      font-size: 16px;
+      color: var(--azul-noite);
+      outline: none;
+      transition: border-color 0.2s;
+      border-radius: 0;
+      -webkit-appearance: none;
+    }
+    .capture-form input::placeholder { color: #9fa8b2; }
+    .capture-form input:focus { border-color: var(--azul-noite); }
+    .capture-form__cta {
+      width: 100%;
+      padding: 18px 24px;
+      background-color: var(--vermelho);
+      color: #fff;
+      font-family: var(--dm-sans);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.15s;
+    }
+    .capture-form__cta:hover { background-color: #a93226; transform: translateY(-1px); }
+    .capture-form__cta:active { transform: translateY(0); }
+    .capture-form__cta:disabled { background-color: #b0b8c1; cursor: not-allowed; transform: none; }
+    .capture-form__privacy { font-family: var(--inter); font-size: 12px; color: var(--texto); opacity: 0.5; margin-top: 4px; }
+    .capture-form__error { font-family: var(--inter); font-size: 13px; color: var(--vermelho); text-align: left; margin-top: -4px; }
+    .capture-form input.input--invalid { border-color: var(--vermelho); }
+
+    .optin-check { display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
+    .optin-check input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; }
+    .optin-check__box {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      border: 1.5px solid rgba(26,46,74,0.3);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .optin-check__box svg { width: 12px; height: 12px; color: #fff; opacity: 0; transition: opacity 0.15s; }
+    .optin-check input:checked ~ .optin-check__box { background: var(--azul-noite); border-color: var(--azul-noite); }
+    .optin-check input:checked ~ .optin-check__box svg { opacity: 1; }
+    .optin-check input:focus-visible ~ .optin-check__box { outline: 2px solid var(--dourado); outline-offset: 2px; }
+    .optin-check__text { font-family: var(--inter); font-size: 13px; color: var(--azul-noite); line-height: 1.5; }
+
+    .authority-strip { background-color: var(--azul-noite); padding: 40px 40px; text-align: center; }
+    .authority-strip__inner { display: flex; align-items: center; gap: 48px; max-width: 820px; margin: 0 auto; }
+    .authority-strip__photo { flex-shrink: 0; }
+    .authority-strip__photo img { width: 170px; height: 170px; border-radius: 50%; object-fit: cover; object-position: top; border: 3px solid var(--dourado); display: block; }
+    .authority-strip__content { flex: 1; }
+    .authority-strip__quote {
+      font-family: var(--cormorant);
+      font-style: italic;
+      font-size: clamp(20px, 2.5vw, 26px);
+      color: var(--creme);
+      margin: 0 0 24px;
+      line-height: 1.5;
+      border-left: 3px solid var(--dourado);
+      padding-left: 28px;
+      text-align: left;
+    }
+    .authority-strip__author {
+      font-family: var(--inter);
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--dourado);
+      padding-left: calc(28px + 3px);
+      text-align: left;
+    }
+
+    .container { max-width: 760px; margin: 0 auto; padding: 0 24px; }
+
+    .s-label {
+      font-family: var(--dm-sans);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--vermelho);
+      display: block;
+      margin-bottom: 12px;
+    }
+    .s-label--gold { color: var(--dourado); }
+    .s-divider { width: 40px; height: 2px; background: var(--vermelho); margin: 14px 0 32px; }
+    .s-divider--gold { background: var(--dourado); }
+    .s-divider--center { margin-left: auto; margin-right: auto; }
+    .s-title { font-family: var(--playfair); font-weight: 700; font-size: clamp(22px, 3.5vw, 34px); line-height: 1.2; color: var(--azul-noite); }
+    .s-title--light { color: var(--creme); }
+
+    .s-promessa { background: var(--off-white); padding: 40px 0; }
+    .promessa-text p { font-size: 16px; line-height: 1.85; margin-bottom: 18px; color: var(--texto); }
+    .promessa-text strong { color: var(--azul-noite); font-weight: 600; }
+    .promessa-text blockquote {
+      font-family: var(--cormorant);
+      font-style: italic;
+      font-size: clamp(19px, 2.5vw, 23px);
+      color: var(--azul-noite);
+      border-left: 3px solid var(--dourado);
+      padding: 4px 0 4px 24px;
+      margin: 32px 0;
+      line-height: 1.6;
+    }
+
+    .s-acesso { background: var(--azul-noite); padding: 40px 0; }
+    .acesso-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 36px; }
+    .acesso-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      background: rgba(245,237,216,.05);
+      border: 1px solid rgba(184,134,11,.18);
+      padding: 22px;
+    }
+    .acesso-icon { flex-shrink: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--dourado); }
+    .acesso-item h3 { font-family: var(--inter); font-size: 14px; font-weight: 600; color: var(--creme); margin-bottom: 6px; line-height: 1.35; }
+    .acesso-item p { font-size: 13px; color: rgba(245,237,216,.58); line-height: 1.65; }
+
+    .s-paraquem { background: var(--creme); padding: 40px 0; }
+    .paraquem-list { list-style: none; margin-top: 28px; }
+    .paraquem-list li { display: flex; gap: 14px; align-items: flex-start; font-size: 15.5px; color: var(--texto); line-height: 1.65; padding: 14px 0; border-bottom: 1px solid rgba(26,46,74,.1); }
+    .paraquem-list li:last-child { border-bottom: none; }
+    .paraquem-list li::before { content: "✓"; color: var(--vermelho); font-weight: 700; font-size: 15px; flex-shrink: 0; margin-top: 2px; }
+    .paraquem-nao { background: rgba(192,57,43,.06); border: 1px solid rgba(192,57,43,.18); padding: 24px 28px; margin-top: 36px; }
+    .paraquem-nao h3 { font-family: var(--dm-sans); font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--vermelho); margin-bottom: 14px; }
+    .paraquem-nao ul { list-style: none; }
+    .paraquem-nao li { font-size: 14.5px; color: #667; padding: 7px 0; border-bottom: 1px solid rgba(192,57,43,.08); display: flex; gap: 10px; align-items: flex-start; }
+    .paraquem-nao li:last-child { border-bottom: none; }
+    .paraquem-nao li::before { content: "✗"; color: rgba(192,57,43,.55); font-weight: 700; flex-shrink: 0; }
+
+    .s-depo { background: var(--azul-noite); padding: 40px 0; }
+    .depo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 36px; }
+    .depo-card { background: rgba(245,237,216,.05); border-left: 3px solid var(--dourado); padding: 22px 22px 22px 24px; }
+    .depo-card blockquote { font-family: var(--cormorant); font-style: italic; font-size: 17px; color: var(--creme); line-height: 1.65; margin: 0 0 14px; }
+    .depo-autor { font-family: var(--dm-sans); font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--dourado); }
+
+    .s-oferta { background: var(--off-white); padding: 40px 0; }
+    .bonus-item { display: flex; gap: 22px; align-items: flex-start; background: var(--off-white); border: 1px solid rgba(184,134,11,.2); padding: 22px 26px; margin-bottom: 12px; }
+    .bonus-num { font-family: var(--playfair); font-size: 32px; font-weight: 700; color: var(--dourado); line-height: 1; flex-shrink: 0; min-width: 32px; }
+    .bonus-item h3 { font-family: var(--inter); font-size: 15px; font-weight: 600; color: var(--azul-noite); margin-bottom: 6px; line-height: 1.35; }
+    .bonus-item p { font-size: 14px; color: #506070; line-height: 1.65; }
+    .tag-exclusivo { display: inline-block; font-family: var(--dm-sans); font-size: 8px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--vermelho); border: 1px solid var(--vermelho); padding: 2px 8px; margin-left: 8px; vertical-align: middle; }
+    .bonus-escassez { font-size: 13px; color: var(--vermelho); font-weight: 600; margin-top: 10px; }
+    .oferta-destaque { background: var(--azul-noite); padding: 44px 40px; text-align: center; margin-top: 32px; border: 1px solid rgba(184,134,11,.3); }
+    .oferta-tag { display: inline-block; font-family: var(--dm-sans); font-size: 9px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--dourado); border: 1px solid rgba(184,134,11,.4); padding: 5px 16px; margin-bottom: 20px; }
+    .oferta-destaque h3 { font-family: var(--playfair); font-size: clamp(20px, 3vw, 26px); color: var(--creme); margin-bottom: 12px; }
+    .oferta-desconto { font-family: var(--playfair); font-size: clamp(52px, 8vw, 76px); font-weight: 700; color: var(--dourado); line-height: 1; margin: 18px 0; }
+    .oferta-destaque p { font-size: 15px; color: rgba(245,237,216,.72); line-height: 1.75; max-width: 480px; margin: 0 auto 28px; }
+    .btn { display: block; padding: 18px 24px; background: var(--vermelho); color: #fff; border: none; font-family: var(--dm-sans); font-weight: 700; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; transition: background .2s, transform .15s; text-align: center; text-decoration: none; }
+    .btn:hover { background: #a93226; transform: translateY(-2px); }
+    @media (hover: none) { .btn:hover, .btn--white:hover, .btn--outline:hover, .capture-form__cta:hover { transform: none; } }
+    .btn--outline { background: transparent; border: 1.5px solid rgba(245,237,216,.35); color: var(--creme); max-width: 480px; margin: 0 auto; }
+    .btn--outline:hover { background: var(--creme); color: var(--azul-noite); border-color: var(--creme); }
+
+    .s-autor { background: var(--azul-noite); padding: 40px 0; }
+    .autor-grid { display: grid; grid-template-columns: 200px 1fr; gap: 40px; align-items: start; }
+    .autor-foto { width: 100%; border: 1px solid rgba(184,134,11,.28); box-shadow: 0 16px 48px rgba(0,0,0,.35); overflow: hidden; }
+    .autor-foto img { width: 100%; height: auto; display: block; }
+    .autor-nome { font-family: var(--playfair); font-size: clamp(24px, 4vw, 36px); font-weight: 700; color: var(--creme); margin-bottom: 4px; }
+    .autor-cred { font-family: var(--dm-sans); font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dourado); margin-bottom: 18px; }
+    .autor-bio p { font-size: 15px; color: rgba(245,237,216,.76); line-height: 1.8; margin-bottom: 14px; }
+    .autor-bio strong { color: var(--creme); }
+    .autor-bio blockquote { font-family: var(--cormorant); font-style: italic; font-size: 19px; color: var(--creme); border-left: 3px solid var(--dourado); padding: 2px 0 2px 20px; margin: 18px 0; line-height: 1.6; }
+
+    .s-cta-final { background: var(--vermelho); padding: 40px 0; text-align: center; }
+    .s-cta-final h2 { font-family: var(--playfair); font-size: clamp(22px, 3.5vw, 34px); color: #fff; margin-bottom: 14px; }
+    .s-cta-final p { font-size: 16px; color: rgba(255,255,255,.82); margin-bottom: 36px; max-width: 500px; margin-left: auto; margin-right: auto; line-height: 1.7; }
+    .btn--white { background: #fff; color: var(--vermelho); max-width: 460px; margin: 0 auto; }
+    .btn--white:hover { background: var(--creme); color: var(--vermelho); transform: translateY(-2px); }
+
+    .s-contato { background: var(--off-white); padding: 30px 0; text-align: center; }
+    .contato-links { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-top: 28px; }
+    .contato-link { display: flex; align-items: center; gap: 10px; font-family: var(--dm-sans); font-size: 14px; font-weight: 700; color: var(--texto); text-decoration: none; letter-spacing: .04em; transition: color .2s; }
+    .contato-link:hover { color: var(--vermelho); }
+
+    footer { background: var(--azul-noite); padding: 28px 0; text-align: center; }
+    footer p { font-family: var(--dm-sans); font-size: 11px; color: rgba(245,237,216,.22); letter-spacing: .06em; }
+
+    .above-fold { min-height: 100dvh; display: flex; flex-direction: column; }
+    .above-fold .topbar { flex-shrink: 0; }
+    .above-fold hr { flex-shrink: 0; }
+    .above-fold .hero { flex-shrink: 0; padding: 18px 45px 14px; }
+    .above-fold .video-section { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 10px 24px 20px; gap: 6px; }
+    .above-fold .video-section__label { flex-shrink: 0; margin-bottom: 0; }
+    .above-fold .video-section__intro { flex-shrink: 0; margin: 0; font-size: clamp(15px, 2.8vw, 27px); }
+    .above-fold .video-wrapper { width: min(100%, calc((100dvh - 280px) * 16 / 9)); max-width: 100%; min-height: 300px; margin: 0; aspect-ratio: 16 / 9; box-shadow: 0 8px 32px rgba(26,46,74,0.14); }
+    .above-fold .video-wrapper iframe, .above-fold .video-wrapper video { width: 100%; height: 100%; aspect-ratio: unset; }
+    .above-fold .video-placeholder { width: 100%; height: 100%; aspect-ratio: unset; }
+
+    @media (max-height: 620px) {
+      .above-fold .hero__subtitle { display: none; }
+      .above-fold .hero { padding: 10px 45px; }
+    }
+
+    /* Monitor grande: 1440px+ */
+    @media (min-width: 1440px) {
+      .above-fold .video-section { padding: 14px 24px 24px; gap: 10px; }
+    }
+
+    /* Monitor muito grande: 1920px+ */
+    @media (min-width: 1920px) {
+      .above-fold .video-section { padding: 20px 24px 32px; }
+    }
+
+    /* Tablet: até 1024px */
+    @media (max-width: 1024px) {
+      .above-fold .video-wrapper { min-height: 320px; }
+    }
+
+    @media (max-width: 768px) {
+      .topbar { padding: 10px 20px; gap: 6px; justify-content: space-between; }
+      .topbar__countdown-wrap { margin-left: 0; }
+      .countdown__num { font-size: 17px; min-width: 26px; }
+      .countdown__sep { font-size: 15px; }
+      .countdown__unit { font-size: 8px; }
+      .above-fold { min-height: 0; }
+      .above-fold .hero { padding: 12px 20px 8px; }
+      .above-fold .video-section { flex: 0 0 auto; padding: 6px 16px 16px; gap: 4px; }
+      .above-fold .video-section__intro { font-size: clamp(13px, 3.8vw, 17px); }
+      .above-fold .video-wrapper { min-height: 220px; }
+      .hero { padding: 48px 20px 40px; }
+      .hero__proof { gap: 16px; flex-wrap: wrap; }
+      .hero__proof-divider { display: none; }
+      .hero__proof-item strong { font-size: 22px; }
+      .hero__proof-item span { font-size: 10px; }
+      .video-section { padding: 36px 20px 32px; }
+      .video-section__intro { font-size: clamp(16px, 4vw, 20px); }
+      .capture-section { padding: 48px 20px 56px; }
+      .capture-form { max-width: 100%; }
+      .authority-strip { padding: 40px 20px; }
+      .authority-strip__inner { flex-direction: column; gap: 28px; }
+      .authority-strip__photo img { width: 130px; height: 130px; margin: 0 auto; }
+      .authority-strip__content { width: 100%; }
+      .authority-strip__quote { padding-left: 20px; font-size: clamp(17px, 4vw, 22px); }
+      .authority-strip__author { padding-left: 23px; }
+      .s-promessa, .s-acesso, .s-paraquem, .s-depo, .s-oferta, .s-autor, .s-cta-final, .s-contato { padding: 56px 0; }
+      .acesso-grid, .depo-grid { grid-template-columns: 1fr; }
+      .autor-grid { grid-template-columns: 1fr; text-align: center; }
+      .autor-foto { max-width: 160px; margin: 0 auto; }
+      .autor-bio blockquote { text-align: left; }
+      .s-divider.s-divider--gold { margin-left: auto; margin-right: auto; }
+      .oferta-destaque { padding: 32px 20px; }
+      .bonus-item { flex-direction: column; gap: 10px; }
+      .bonus-num { font-size: 24px; }
+      .paraquem-nao { padding: 18px 20px; }
+      .contato-links { flex-direction: column; align-items: center; gap: 18px; }
+      .s-cta-final p { margin-bottom: 28px; }
+    }
+
+    @media (max-width: 480px) {
+      .topbar__label, .topbar__sep { display: none; }
+      .topbar { justify-content: space-between; padding: 8px 16px; }
+      .topbar__name { opacity: 1; }
+      .topbar__countdown-label { display: none; }
+      .countdown__num { font-size: 15px; min-width: 22px; }
+      .countdown__sep { margin-bottom: 8px; }
+      .above-fold .hero { padding: 10px 16px 6px; }
+      .above-fold .hero .hero__subtitle { font-size: 13px; line-height: 1.5; }
+      .above-fold .video-section { flex: 0 0 auto; padding: 4px 12px 14px; }
+      .above-fold .video-wrapper { min-height: 180px; }
+      .hero { padding: 40px 16px 32px; }
+      .hero__proof { gap: 12px; }
+      .video-section { padding: 28px 16px 24px; }
+      .capture-section { padding: 40px 16px 48px; }
+      .capture-form__cta { font-size: 13px; padding: 16px 18px; }
+      .container { padding: 0 16px; }
+      .s-promessa, .s-acesso, .s-paraquem, .s-depo, .s-oferta, .s-autor, .s-cta-final, .s-contato { padding: 48px 0; }
+      .depo-card blockquote { font-size: 15px; }
+      .oferta-destaque { padding: 28px 16px; }
+      .oferta-desconto { font-size: clamp(40px, 12vw, 60px); }
+      .btn--outline { font-size: 12px; padding: 14px 16px; }
+      .btn--white { font-size: 13px; padding: 16px 20px; }
+    }
+
+    @media (max-height: 620px) {
+      .above-fold .hero__subtitle { display: none; }
+      .above-fold .hero { padding: 8px 20px; }
+      .above-fold .video-section { padding: 4px 16px; gap: 3px; }
+      .above-fold .video-section__intro { font-size: 13px; }
+      .above-fold .video-wrapper { min-height: 160px; }
+    }
+
+    /* CTA principal de compra */
+    .cta-purchase-wrap { max-width: 540px; margin: 0 auto; }
+    .cta-purchase {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+      padding: 24px 40px;
+      background: var(--vermelho);
+      color: #fff;
+      text-decoration: none;
+      box-shadow: 0 18px 44px rgba(192,57,43,0.32), 0 0 0 1px rgba(184,134,11,0.25);
+      transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+      overflow: hidden;
+      animation: cta-pulse 2.4s ease-in-out infinite;
+    }
+    .cta-purchase::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -120%;
+      width: 80%; height: 100%;
+      background: linear-gradient(100deg, transparent, rgba(255,255,255,0.22), transparent);
+      animation: cta-shine 2.8s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes cta-shine {
+      0% { left: -120%; }
+      60%, 100% { left: 120%; }
+    }
+    @keyframes cta-pulse {
+      0%, 100% { box-shadow: 0 18px 44px rgba(192,57,43,0.32), 0 0 0 1px rgba(184,134,11,0.25); }
+      50%      { box-shadow: 0 22px 56px rgba(192,57,43,0.5),  0 0 0 1px rgba(184,134,11,0.35); }
+    }
+    .cta-purchase:hover {
+      background: #a93226;
+      transform: translateY(-2px);
+    }
+    .cta-purchase__top {
+      font-family: var(--dm-sans);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      line-height: 1.2;
+    }
+    .cta-purchase__bottom {
+      font-family: var(--inter);
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--creme);
+      opacity: 0.92;
+    }
+    .cta-purchase__note {
+      font-family: var(--inter);
+      font-size: 13px;
+      color: var(--vermelho);
+      font-weight: 600;
+      margin-top: 18px;
+      max-width: 540px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .cta-purchase__note-line { display: inline; white-space: nowrap; }
+    @media (max-width: 540px) {
+      .cta-purchase__note-line { display: block; white-space: normal; }
+    }
+    .cta-purchase__sub {
+      font-family: var(--inter);
+      font-size: 13px;
+      color: var(--texto);
+      opacity: 0.6;
+      margin-top: 8px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .cta-purchase { animation: none; }
+      .cta-purchase::before { display: none; }
+    }
+    @media (max-width: 480px) {
+      .cta-purchase { padding: 20px 24px; }
+      .cta-purchase__top { font-size: 15px; letter-spacing: 0.08em; }
+      .cta-purchase__bottom { font-size: 10px; letter-spacing: 0.14em; }
+    }
+
+    /* Bloco de preço */
+    .cta-price {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 20px;
+    }
+    .cta-price__label {
+      font-family: var(--dm-sans);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--vermelho);
+    }
+    .cta-price__value {
+      font-family: var(--playfair);
+      font-size: clamp(34px, 6vw, 48px);
+      font-weight: 700;
+      color: var(--azul-noite);
+      line-height: 1;
+      letter-spacing: 0.01em;
+    }
+    .cta-price__value strong { color: var(--vermelho); font-weight: 700; }
+    .cta-price__hint {
+      font-family: var(--inter);
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--texto);
+      opacity: 0.6;
+      margin-top: 2px;
+    }
+
+    /* Preço — variante para fundo escuro (oferta-destaque) */
+    .cta-price--dark .cta-price__label { color: var(--dourado); }
+    .cta-price--dark .cta-price__value { color: var(--creme); }
+    .cta-price--dark .cta-price__value strong { color: var(--dourado); }
+    .cta-price--dark .cta-price__hint { color: var(--creme); opacity: 0.65; }
+
+    /* Preço — variante para fundo vermelho (CTA final) */
+    .cta-price--white { margin-bottom: 24px; }
+    .cta-price--white .cta-price__label { color: rgba(255,255,255,0.85); }
+    .cta-price--white .cta-price__value { color: #fff; }
+    .cta-price--white .cta-price__value strong { color: var(--creme); }
+    .cta-price--white .cta-price__hint { color: rgba(255,255,255,0.78); opacity: 1; }
+  </style>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P34XGHN7"
+                  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+  <div class="above-fold">
+
+  <div class="topbar">
+    <span class="topbar__label">Inscrições abertas</span>
+    <span class="topbar__sep"></span>
+    <span class="topbar__name">Ilan Brenman</span>
+    <div class="topbar__countdown-wrap">
+      <span class="topbar__countdown-label">Inscrições finalizam em</span>
+      <div class="countdown">
+        <div class="countdown__block">
+          <span class="countdown__num" id="cd-days">00</span>
+          <span class="countdown__unit">dias</span>
+        </div>
+        <span class="countdown__sep">:</span>
+        <div class="countdown__block">
+          <span class="countdown__num" id="cd-hours">00</span>
+          <span class="countdown__unit">horas</span>
+        </div>
+        <span class="countdown__sep">:</span>
+        <div class="countdown__block">
+          <span class="countdown__num" id="cd-min">00</span>
+          <span class="countdown__unit">min</span>
+        </div>
+        <span class="countdown__sep">:</span>
+        <div class="countdown__block">
+          <span class="countdown__num" id="cd-sec">00</span>
+          <span class="countdown__unit">seg</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="hero">
+    <h1 class="hero__title">
+      Como Criar Leitores<br>
+      <em>Num Mundo de Telas</em>
+    </h1>
+    <p class="hero__subtitle">
+      Um método prático para pais e educadores que querem formar
+      crianças que amam ler — mesmo crescendo numa era dominada
+      por algoritmos e distrações digitais.
+    </p>
+  </section>
+
+  <hr class="divider divider--gold" />
+
+  <section class="video-section paper-texture">
+    <div class="video-wrapper">
+      <iframe src="https://www.youtube.com/embed/NArvV2ss5iA"
+              title="Como Criar Leitores Num Mundo de Telas — Ilan Brenman"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen></iframe>
+    </div>
+    <p class="video-section__intro">
+      "Você não precisa competir com as telas.<br>
+      Você precisa usar o que os livros têm que elas não têm."
+    </p>
+  </section>
+
+  </div><!-- /above-fold -->
+
+  <section class="capture-section paper-texture" id="inscricao">
+    <p class="capture-section__tag">Inscrições abertas — turma 2026</p>
+    <h2 class="capture-section__title">
+      Sua vaga está liberada
+    </h2>
+    <p class="capture-section__sub">
+      O método completo de Ilan Brenman para formar leitores de verdade —
+      mesmo num mundo dominado pelas telas. Acesso imediato após a confirmação.
+    </p>
+
+    <div class="cta-purchase-wrap">
+      <div class="cta-price">
+        <span class="cta-price__label">Por apenas</span>
+        <span class="cta-price__value"><strong>R$ 497,00</strong></span>
+        <span class="cta-price__hint">acesso imediato</span>
+      </div>
+      <a href="https://ilan.netlify.app/pay/cngxhcspqjyaaomnppgq/"
+         class="cta-purchase"
+         target="_blank"
+         rel="noopener">
+        <span class="cta-purchase__top">Quero garantir minha vaga agora</span>
+        <span class="cta-purchase__bottom">Acesso imediato · 1 ano de acesso</span>
+      </a>
+      <p class="cta-purchase__note">
+        <span class="cta-purchase__note-line">Vagas limitadas para esta turma —</span>
+        <span class="cta-purchase__note-line">quando as inscrições finalizarem, o curso sai do ar.</span>
+      </p>
+      <p class="cta-purchase__sub">
+        Pagamento seguro via Hubla. Acesso liberado logo após a confirmação.
+      </p>
+    </div>
+  </section>
+
+  <hr class="divider divider--gold" />
+
+
+  <section class="authority-strip">
+    <div class="authority-strip__inner">
+      <div class="authority-strip__photo">
+        <img src="images/perfil_2.jpg" alt="Ilan Brenman" />
+      </div>
+      <div class="authority-strip__content">
+        <blockquote class="authority-strip__quote">
+          "A leitura não compete com as telas. Ela oferece o que
+          nenhuma tela jamais vai conseguir dar: silêncio interior,
+          imaginação livre e a sensação de habitar outro mundo."
+        </blockquote>
+        <p class="authority-strip__author">Ilan Brenman — escritor, Prêmio Jabuti</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="s-promessa paper-texture">
+    <div class="container">
+      <span class="s-label">Por que este curso existe</span>
+      <h2 class="s-title">A estratégia que vai te permitir<br>criar um leitor de verdade</h2>
+      <div class="s-divider"></div>
+      <div class="promessa-text">
+        <p>
+          Pela primeira vez na história, os registros de ansiedade em crianças
+          <strong>superaram os de adultos no Brasil</strong>. O país perdeu
+          <strong>7 milhões de leitores</strong> desde 2019. E os próprios criadores do
+          Instagram, Apple, YouTube e TikTok matriculam seus filhos em escolas que
+          proíbem o uso das suas próprias criações.
+        </p>
+        <p>Eles sabem o malefício que causam — principalmente para as crianças.</p>
+        <blockquote>
+          "A resposta não é proibir a tela. É criar algo tão forte ao lado dela
+          que ela perde o protagonismo. O livro faz isso — quando o adulto sabe
+          o que está fazendo."
+        </blockquote>
+        <p>
+          <strong>Como Criar Leitores Num Mundo de Telas</strong> é o primeiro curso online
+          100% desenvolvido por Ilan Brenman — escritor com mais de 80 livros publicados,
+          Prêmio Jabuti, psicólogo pela PUC-SP e doutor em Educação pela USP.
+        </p>
+        <p>
+          Tudo que ele aprendeu em 30 anos percorrendo o mundo escolar, universitário e
+          cultural — num <strong>método prático que qualquer pai, mãe ou educador
+          consegue aplicar ainda essa semana.</strong>
+        </p>
+        <p>Não é uma lista de livros. <strong>É um mapa. Do bebê às crianças maiores.</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <section class="s-acesso">
+    <div class="container">
+      <span class="s-label s-label--gold">O que você vai ter acesso</span>
+      <h2 class="s-title s-title--light">O método completo,<br>do bebê às crianças maiores</h2>
+      <div class="s-divider s-divider--gold"></div>
+      <div class="acesso-grid">
+
+        <div class="acesso-item">
+          <div class="acesso-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+            </svg>
+          </div>
+          <div>
+            <h3>12 aulas + aula bônus prática</h3>
+            <p>Do bebê às crianças maiores — como escolher o livro certo e criar o ritual de leitura que dura para a vida toda.</p>
+          </div>
+        </div>
+
+        <div class="acesso-item">
+          <div class="acesso-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+          <div>
+            <h3>Curadoria literária por faixa etária</h3>
+            <p>Saiba exatamente qual livro apresentar em cada fase do desenvolvimento — com o porquê de cada escolha.</p>
+          </div>
+        </div>
+
+        <div class="acesso-item">
+          <div class="acesso-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+            </svg>
+          </div>
+          <div>
+            <h3>Método de mediação leitora</h3>
+            <p>O ritual, o ambiente e o vínculo afetivo que tornam a criança leitora por prazer — não por obrigação.</p>
+          </div>
+        </div>
+
+        <div class="acesso-item">
+          <div class="acesso-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+            </svg>
+          </div>
+          <div>
+            <h3>Por que histórias difíceis são essenciais</h3>
+            <p>O papel das histórias de medo e temas complexos no desenvolvimento emocional da criança.</p>
+          </div>
+        </div>
+
+        <div class="acesso-item">
+          <div class="acesso-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </div>
+          <div>
+            <h3>Como montar uma biblioteca que a criança usa sozinha</h3>
+            <p>Um espaço que convida a criança a escolher o livro por conta própria — sem estante cara, sem muito espaço.</p>
+          </div>
+        </div>
+
+        <div class="acesso-item">
+          <div class="acesso-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
+            </svg>
+          </div>
+          <div>
+            <h3>1 ano de acesso completo</h3>
+            <p>Assista no seu ritmo, quantas vezes quiser, durante um ano inteiro — em qualquer dispositivo.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider divider--gold" />
+
+  <section class="s-paraquem paper-texture">
+    <div class="container">
+      <span class="s-label">Este curso é para quem…</span>
+      <h2 class="s-title">Reconhece pelo menos uma<br>dessas situações</h2>
+      <div class="s-divider"></div>
+      <ul class="paraquem-list">
+        <li>É pai ou mãe e quer que o filho ame ler — mas não sabe como criar esse hábito sem forçar.</li>
+        <li>É educador, professor ou coordenador pedagógico e busca um método baseado em 30 anos de prática real.</li>
+        <li>Já tentou colocar seu filho para ler e percebeu que faltava algo — um repertório, uma estratégia, um mapa.</li>
+        <li>Quer entender como funciona a cabeça de uma criança em relação às histórias — do bebê ao adolescente.</li>
+        <li>Sente que as telas estão dominando o tempo da criança e quer uma contrapartida concreta e positiva.</li>
+        <li>Nunca leu para seu bebê e acha que perdeu o tempo certo — mas quer começar agora.</li>
+      </ul>
+      <div class="paraquem-nao">
+        <h3>Este curso não é para quem…</h3>
+        <ul>
+          <li>Quer uma lista de livros sem contexto — sem entender o porquê de cada escolha.</li>
+          <li>Busca receitas prontas que funcionam para qualquer criança — cada criança é única.</li>
+          <li>Não está disposto a dedicar 10 a 15 minutos por semana para criar um ritual de leitura.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <section class="s-depo">
+    <div class="container">
+      <span class="s-label s-label--gold">O que acontece quando o adulto tem o método certo</span>
+      <h2 class="s-title s-title--light">Resultados reais,<br>em palavras reais</h2>
+      <div class="s-divider s-divider--gold"></div>
+      <div class="depo-grid">
+        <div class="depo-card">
+          <blockquote>"Tenho o livro A Cicatriz. Quando terminei de ler com meu filho de 5 anos, ele me disse que eu tinha uma cicatriz — a da cesárea. Me emocionei demais. Isso sim é literatura."</blockquote>
+          <p class="depo-autor">Mãe, seguidora do Ilan</p>
+        </div>
+        <div class="depo-card">
+          <blockquote>"A presença do Ilan foi tão impactante que marcou a história de vida de todos. Os pais disseram que seus filhos não falam em outra coisa senão no Ilan e em sua obra."</blockquote>
+          <p class="depo-autor">Gestora de escola, São Paulo</p>
+        </div>
+        <div class="depo-card">
+          <blockquote>"Eles negavam a leitura — e me doía por ser bibliotecária e professora. Com seus livros, eles estavam disputando para ler."</blockquote>
+          <p class="depo-autor">Bibliotecária e mãe</p>
+        </div>
+        <div class="depo-card">
+          <blockquote>"Meu filho está no espectro autista. As histórias são de muita importância para tudo nas nossas vidas."</blockquote>
+          <p class="depo-autor">Mãe de seguidor</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider divider--gold" />
+
+  <section class="s-oferta paper-texture">
+    <div class="container">
+      <span class="s-label" style="text-align:center; display:block;">Oferta especial — 1ª turma</span>
+      <h2 class="s-title" style="text-align:center;">Bônus exclusivos<br>desta turma</h2>
+      <div class="s-divider s-divider--center"></div>
+
+      <div class="bonus-item">
+        <div class="bonus-num">01</div>
+        <div>
+          <h3>Lista completa de livros do curso com links e onde encontrar</h3>
+          <p>Cada livro indicado nas aulas com acesso direto. Sem precisar procurar — pronto para aplicar ainda essa semana.</p>
+        </div>
+      </div>
+
+      <div class="bonus-item">
+        <div class="bonus-num">02</div>
+        <div>
+          <h3>Guia: como montar uma biblioteca em casa com baixo custo</h3>
+          <p>Um guia prático para criar um espaço que convida a criança a escolher o livro sozinha — sem estante cara, sem muito espaço.</p>
+        </div>
+      </div>
+
+      <div class="bonus-item">
+        <div class="bonus-num">03</div>
+        <div>
+          <h3>
+            Aula ao vivo com Ilan Brenman
+            <span class="tag-exclusivo">Exclusivo desta turma</span>
+          </h3>
+          <p>Pergunte qualquer coisa — sobre os livros, sobre a criança na sua vida, sobre como aplicar o método na sua realidade.</p>
+          <p class="bonus-escassez">Quando as inscrições finalizarem em 29 de abril, esse bônus some para sempre.</p>
+        </div>
+      </div>
+
+      <div class="oferta-destaque">
+        <div class="oferta-tag">Inscrições abertas — vagas limitadas</div>
+        <h3>Quando as inscrições finalizarem, o curso sai do ar — e os bônus desta turma somem com ele.</h3>
+        <div class="cta-price cta-price--dark" style="margin: 20px 0 24px;">
+          <span class="cta-price__label">Por apenas</span>
+          <span class="cta-price__value"><strong>R$ 497,00</strong></span>
+          <span class="cta-price__hint">acesso imediato</span>
+        </div>
+        <a href="https://ilan.netlify.app/pay/cngxhcspqjyaaomnppgq/" class="btn btn--outline" target="_blank" rel="noopener">Quero garantir minha vaga agora</a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider divider--gold" />
+
+  <section class="s-autor">
+    <div class="container">
+      <div class="autor-grid">
+        <div class="autor-foto">
+          <img src="images/perfil.jpg" alt="Ilan Brenman — escritor, Prêmio Jabuti" />
+        </div>
+        <div>
+          <span class="s-label s-label--gold">Quem vai te guiar nessa jornada</span>
+          <h2 class="autor-nome">Ilan Brenman</h2>
+          <p class="autor-cred">Escritor · Psicólogo · Doutor em Educação USP · Prêmio Jabuti</p>
+          <div class="s-divider s-divider--gold"></div>
+          <div class="autor-bio">
+            <p>Com mais de <strong>80 livros publicados</strong> — incluindo "Até as Princesas Soltam Pum", um dos mais vendidos da história do Brasil — <strong>Prêmio Jabuti</strong>, traduções em <strong>17 países</strong> e 30 anos percorrendo o mundo escolar e cultural.</p>
+            <blockquote>"Como eu faço meu filho gostar de ler?"</blockquote>
+            <p><strong>Como Criar Leitores Num Mundo de Telas</strong> é o seu primeiro curso online 100% desenvolvido por ele — e a primeira vez que esse mapa fica disponível fora de uma palestra.</p>
+            <p>Se você já foi a uma palestra do Ilan e quis mais — esse curso é o "mais" que você estava esperando.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <section class="s-cta-final">
+    <div class="container">
+      <h2>Pronto para começar?</h2>
+      <p>Sua vaga está liberada. Entre agora e tenha acesso imediato ao método completo, antes que as inscrições finalizem.</p>
+      <div class="cta-price cta-price--white">
+        <span class="cta-price__label">Por apenas</span>
+        <span class="cta-price__value"><strong>R$ 497,00</strong></span>
+        <span class="cta-price__hint">acesso imediato</span>
+      </div>
+      <a href="https://ilan.netlify.app/pay/cngxhcspqjyaaomnppgq/" class="btn btn--white" target="_blank" rel="noopener">Quero garantir minha vaga agora</a>
+    </div>
+  </section>
+  
+  <footer>
+    <div class="container">
+      <p>© Como Criar Leitores Num Mundo de Telas &mdash; Ilan Brenman &nbsp;·&nbsp; 2026</p>
+    </div>
+  </footer>
+
+  <script>
+    var DEADLINE = '2026-04-29T23:59:59-03:00';
+    var deadline = new Date(DEADLINE).getTime();
+
+    var days  = document.getElementById('cd-days');
+    var hours = document.getElementById('cd-hours');
+    var mins  = document.getElementById('cd-min');
+    var secs  = document.getElementById('cd-sec');
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function tick() {
+      var now = Date.now();
+      var diff = deadline - now;
+      if (diff <= 0) {
+        days.textContent = hours.textContent = mins.textContent = secs.textContent = '00';
+        return;
+      }
+      days.textContent  = pad(Math.floor(diff / (1000 * 60 * 60 * 24)));
+      hours.textContent = pad(Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
+      mins.textContent  = pad(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)));
+      secs.textContent  = pad(Math.floor((diff % (1000 * 60)) / 1000));
+    }
+
+    tick();
+    setInterval(tick, 1000);
+  </script>
+</body>
+</html>
